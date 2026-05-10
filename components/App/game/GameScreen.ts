@@ -45,7 +45,7 @@ export class GameScreen extends Screen {
     this.camera = new Gfx3Camera(0);
     this.plane = new Plane();
     this.level = new Environment();
-    this.bulletManager = new BulletManager([0.1, 0.8, 1.0]); // Glowing cyan player lasers
+    this.bulletManager = new BulletManager([1.0, 0.0, 0.0]); // Glowing red player lasers
     this.enemyManager = new EnemyManager();
   }
 
