@@ -1,11 +1,47 @@
-<div align="center">
+# ArcadeGPU: Flight Simulator
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+**ELI10 TLDR:** Fly your airplane, maneuver with your mouse and keyboard, and soar through a 3D sky.
 
-  <h1>Built with AI Studio</h2>
+A high-performance 3D Flight Simulator Game built with the **ArcadeGPU** engine. This project features real-time Jolt Physics, custom 3D procedural meshes, and a nostalgic arcade aesthetic.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## 🎮 How to Play
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+### Controls
+*   **W / S** - Pitch
+*   **A / D** - Roll
+*   **Q / E** - Yaw
+*   **SHIFT / CTRL** - Throttle (Speed up / Slow down)
+*   **MOUSE** - Pitch / Roll via steering
+*   **Virtual Joystick / Buttons** - On-screen controls for mobile players
 
-</div>
+## 📁 Directory Structure
+
+```text
+/
+├── arcadegpu-code/          # Core Engine Library (ArcadeGPU)
+│   ├── src/lib/             # Engine Source (gfx3, jolt, input, etc.)
+│   └── public/              # Core Assets (WASMs, standard textures)
+├── components/
+│   ├── App/                 # Main Application Components
+│   │   ├── game/            # Game Entities (Plane, Environment, Explosion)
+│   │   └── App.tsx          # Main Game Screen Logic & UI Overlay
+│   ├── Core/                # UI Design System Components
+│   └── Package/             # Complex UI Modules
+```
+
+## 🛠 Developer Handoff Guide
+
+### Key Systems
+
+1.  **Input Handling**: Centralized in `inputManager`. Actions are registered in `GameScreen.onEnter()`. Pointer event propagation is explicitly stopped for touch UI buttons to prevent unintended camera movement while flying.
+2.  **Flight Physics**: Simulating roll, pitch, yaw, and throttle mapped into forward vectors via Jolt Physics with gravity-based flight dynamics.
+3.  **Entity Lifecycle**:
+    -   `constructor()`: Setup physics bodies and procedural meshes.
+    -   `update(ts)`: Handle flight logic, move physics bodies, and sync mesh positions.
+    -   `draw()`: Submit meshes to the `gfx3MeshRenderer`.
+
+## ⚙️ Build and Run
+
+1.  Ensure all dependencies are installed via `npm install`.
+2.  Run the development server with `npm run dev`.
+3.  Navigate to `localhost:3000` to play.
