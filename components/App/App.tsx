@@ -87,7 +87,9 @@ const ScoreDisplay = ({ gameRef }: { gameRef: React.MutableRefObject<GameScreen 
     }, [gameRef]);
     
     return (
-        <span className="text-white text-[10px] font-mono leading-none ml-auto">{score.toString().padStart(5, '0')}</span>
+        <div className="text-white text-5xl font-bebas drop-shadow-md">
+            {score.toString().padStart(5, '0')}
+        </div>
     );
 };
 
@@ -104,16 +106,32 @@ const HealthBar = ({ gameRef }: { gameRef: React.MutableRefObject<GameScreen | n
     }, [gameRef]);
     
     return (
-        <div className="bg-slate-800/80 p-[4px] px-[6px] rounded flex items-center border border-slate-700 w-[240px]">
-            <span className="text-white/80 text-[10px] font-mono mr-2 leading-none whitespace-nowrap">ARMOR_INTEGRITY</span>
-            <div className="flex-1 h-[8px] bg-slate-900 mx-2 relative overflow-hidden">
+        <div className="flex flex-col gap-1 w-64">
+            <div className="flex justify-between items-end">
+                <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Structural Integrity</span>
+                <span className="text-white text-sm font-mono">{Math.round(health)}%</span>
+            </div>
+            <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 backdrop-blur-sm">
                 <motion.div 
-                    className="absolute top-0 left-0 bottom-0 bg-[#A0C5A0]"
+                    className="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-400"
+                    initial={{ width: '100%' }}
                     animate={{ width: `${health}%` }}
-                    transition={{ type: 'tween', duration: 0.1 }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+                    style={{
+                        boxShadow: health < 30 ? '0 0 12px rgba(239, 68, 68, 0.6)' : 'none'
+                    }}
                 />
             </div>
-            <span className="text-white text-[10px] font-mono leading-none font-bold">{Math.round(health)}%</span>
+            {health < 30 && (
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0.3, 0.7, 0.3] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                    className="text-red-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-1"
+                >
+                    Critical Damage Warning
+                </motion.div>
+            )}
         </div>
     );
 };
@@ -203,56 +221,58 @@ const App = () => {
     }, []);
 
     return (
-        <div className="fixed inset-0 w-full h-full pointer-events-none flex flex-col font-mono selection:bg-none">
+        <div className="fixed inset-0 w-full h-full pointer-events-none flex flex-col justify-end p-8 overflow-hidden font-sans">
             <AnimatePresence>
                 {!isReady && (
                     <motion.div 
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="fixed inset-0 flex flex-col items-center justify-center z-50 pointer-events-auto"
-                        style={{ backgroundColor: '#6e98a3' }}
+                        className="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 pointer-events-auto"
                     >
-                        <div className="text-white text-3xl font-mono tracking-[0.2em] animate-pulse drop-shadow-sm font-bold">
-                            ARCADEGPU_INIT
-                        </div>
-                        <div className="absolute bottom-4 text-white/50 text-xs font-mono tracking-[0.2em]">
-                            DESKTOPMODE // v0.5.1
+                        <div className="text-white text-2xl font-bebas tracking-widest animate-pulse">
+                            INITIALIZING AIR COMBAT...
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            <div className="absolute top-4 left-4 pointer-events-auto z-40">
-                <h1 className="text-3xl font-mono font-bold text-[#E5E7EB] mb-2 drop-shadow-sm tracking-wider">GPU</h1>
-                <HealthBar gameRef={gameScreenRef} />
-                <div className="mt-2 bg-slate-800/80 p-[4px] px-[6px] rounded flex items-center border border-slate-700 w-[240px]">
-                     <span className="text-white/80 text-[10px] font-mono mr-2 leading-none whitespace-nowrap">SCORE_COUNT</span>
-                     <ScoreDisplay gameRef={gameScreenRef} />
+            <div className="absolute top-8 left-8 pointer-events-auto">
+                <h1 className="text-4xl font-bebas text-white drop-shadow-lg tracking-wider">AIR COMBAT</h1>
+                <div className="bg-black/20 backdrop-blur-sm p-3 rounded-lg border border-white/5 mt-2">
+                    <p className="text-white/80 text-xs font-bold uppercase tracking-tighter mb-1">Controls</p>
+                    <p className="text-white/60 text-[11px] font-mono leading-tight">W/S • THROTTLE</p>
+                    <p className="text-white/60 text-[11px] font-mono leading-tight">A/D • ROLL</p>
+                    <p className="text-white/60 text-[11px] font-mono leading-tight">Q/E • YAW</p>
+                    <p className="text-white/60 text-[11px] font-mono leading-tight">SPACE / LClick • FIRE</p>
+                    <p className="text-white/60 text-[11px] font-mono leading-tight">SHIFT • BARREL ROLL</p>
                 </div>
             </div>
             
-            <div className="absolute top-4 right-4 pointer-events-none z-40 flex flex-col items-end">
-                <div className="bg-slate-800/80 p-3 rounded-md border border-slate-700 flex flex-col gap-[6px] items-end min-w-[200px]">
-                    <div className="text-white text-[11px] font-mono leading-none text-right"><span className="text-white/50 mr-2">[W/S]</span> THROTTLE</div>
-                    <div className="text-white text-[11px] font-mono leading-none text-right"><span className="text-white/50 mr-2">[A/D]</span> ROLL</div>
-                    <div className="text-white text-[11px] font-mono leading-none text-right"><span className="text-white/50 mr-2">[Q/E]</span> YAW</div>
-                    <div className="text-white text-[11px] font-mono leading-none text-right"><span className="text-white/50 mr-2">[SPACE]</span> FIRE</div>
-                    <div className="text-white text-[11px] font-mono leading-none text-right"><span className="text-white/50 mr-2">[SHIFT]</span> B-ROLL</div>
+            <div className="absolute top-8 right-8 pointer-events-none flex flex-col items-end gap-4">
+                <div className="bg-emerald-500/20 backdrop-blur-md px-6 py-4 rounded-xl border border-emerald-500/30 text-right">
+                    <div className="text-emerald-400 text-sm font-bold uppercase tracking-widest mb-1">SCORE</div>
+                    <ScoreDisplay gameRef={gameScreenRef} />
+                </div>
+                
+                <div className="bg-black/30 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10">
+                    <HealthBar gameRef={gameScreenRef} />
                 </div>
             </div>
 
             {/* HUD Crosshair */}
-            <div className="fixed inset-0 pointer-events-none flex items-center justify-center mix-blend-screen opacity-70 z-30">
+            <div className="fixed inset-0 pointer-events-none flex items-center justify-center mix-blend-screen opacity-70">
                <div className="absolute w-[40px] h-[2px] bg-emerald-400 rounded shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
                <div className="absolute w-[2px] h-[40px] bg-emerald-400 rounded shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
                <div className="absolute w-[60px] h-[60px] rounded-full border-2 border-emerald-400/50"></div>
                <VirtualJoystickDisplay gameRef={gameScreenRef} />
             </div>
 
-            <div className="absolute bottom-6 left-0 w-full pointer-events-auto flex justify-between items-end px-8 z-40 text-white">
+            <div className="pointer-events-auto flex justify-between items-end w-full pb-8">
                 <Joystick onChange={handleJoystickChange} />
-                {isReady && <div className="text-white/40 text-[10px] font-mono tracking-[0.2em] uppercase drop-shadow-sm pointer-events-none pb-2">DESKTOPMODE // v0.5.1</div>}
+                
+                <div className="flex flex-col items-end gap-2">
+                    <div className="text-white/40 text-xs font-mono uppercase mt-4">Version 0.3.0-Flight</div>
+                </div>
             </div>
 
             <style>{`
